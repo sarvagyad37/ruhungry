@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface PublicEvent {
   id: string;
@@ -102,31 +105,22 @@ export default function Home() {
       <div className="max-w-4xl mx-auto space-y-6">
         <h1 className="text-2xl md:text-3xl font-semibold">RU Hungry • Free Food Events</h1>
         <div className="flex flex-col md:flex-row md:items-center gap-3">
-          <input
+          <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search by title, org, or location"
-            className="flex-1 rounded border px-3 py-2"
+            className="flex-1"
           />
           <div className="flex gap-2">
-            <button
-              className={`px-3 py-2 rounded border ${quick === "all" ? "bg-black text-white dark:bg-white dark:text-black" : ""}`}
-              onClick={() => setQuick("all")}
-            >
+            <Button variant={quick === "all" ? "default" : "outline"} onClick={() => setQuick("all")}>
               All
-            </button>
-            <button
-              className={`px-3 py-2 rounded border ${quick === "today" ? "bg-black text-white dark:bg-white dark:text-black" : ""}`}
-              onClick={() => setQuick("today")}
-            >
+            </Button>
+            <Button variant={quick === "today" ? "default" : "outline"} onClick={() => setQuick("today")}>
               Today
-            </button>
-            <button
-              className={`px-3 py-2 rounded border ${quick === "week" ? "bg-black text-white dark:bg-white dark:text-black" : ""}`}
-              onClick={() => setQuick("week")}
-            >
+            </Button>
+            <Button variant={quick === "week" ? "default" : "outline"} onClick={() => setQuick("week")}>
               This Week
-            </button>
+            </Button>
           </div>
         </div>
         {lastUpdatedText && (
@@ -149,28 +143,18 @@ export default function Home() {
                     <div className="text-sm text-gray-600">{e.org || ""}{e.locationText ? ` • ${e.locationText}` : ""}</div>
                     <div className="flex gap-2 flex-wrap text-xs">
                       {e.benefits.map((b) => (
-                        <span key={b} className="px-2 py-1 rounded-full border">{b}</span>
+                        <Badge key={b} variant={b.toLowerCase() === "free food" ? "default" : "outline"}>{b}</Badge>
                       ))}
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <a
-                      href={e.eventUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="px-3 py-2 rounded border hover:bg-gray-50"
-                    >
-                      Event details
-                    </a>
+                    <Button asChild variant="outline">
+                      <a href={e.eventUrl} target="_blank" rel="noreferrer">Event details</a>
+                    </Button>
                     {e.locationText && (
-                      <a
-                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.locationText)}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="px-3 py-2 rounded border hover:bg-gray-50"
-                      >
-                        Open in Maps
-                      </a>
+                      <Button asChild variant="outline">
+                        <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.locationText)}`} target="_blank" rel="noreferrer">Open in Maps</a>
+                      </Button>
                     )}
                   </div>
                 </div>
