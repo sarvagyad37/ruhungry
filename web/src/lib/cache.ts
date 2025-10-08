@@ -19,7 +19,7 @@ export async function getCachedFreeFood(): Promise<FreeFoodCachePayload | null> 
     try {
       const payload = await redis.get<FreeFoodCachePayload>(EVENTS_KEY);
       if (payload) return payload;
-    } catch (_err) {
+    } catch {
       // ignore and fall back
     }
   }
@@ -31,7 +31,7 @@ export async function setCachedFreeFood(payload: FreeFoodCachePayload): Promise<
     try {
       await redis.set(EVENTS_KEY, payload);
       return;
-    } catch (_err) {
+    } catch {
       // fall through to memory cache
     }
   }
