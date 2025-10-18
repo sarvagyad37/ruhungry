@@ -1,55 +1,94 @@
-import { ExternalLink } from '@tamagui/lucide-icons'
-import { Anchor, H2, Paragraph, XStack, YStack } from 'tamagui'
-import { ToastControl } from 'components/CurrentToast'
+import { Header } from '@/components/header';
+import { SearchBar } from '@/components/search-bar';
+import { EventList } from '@/components/event-list';
+import { EventDetailsModal } from '@/components/event-details-modal';
+import { StickyDateBar } from '@/components/sticky-date-bar';
+import { useTheme } from '@/theme/theme-context';
+import { Keyboard, View } from 'react-native';
+import { useState } from 'react';
 
-export default function TabOneScreen() {
+interface Event {
+  id: number;
+  title: string;
+  time: string;
+  location: string;
+  image: string;
+  isFree: boolean;
+  date: Date;
+  endDate?: Date;
+  org?: string;
+  eventUrl?: string;
+  benefits?: string[];
+}
+
+export default function HomeScreen() {
+  const { currentTheme } = useTheme();
+  const [selectedEvent, setSelectedEvent] = useState<Event | undefined>(undefined);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [dateRange, setDateRange] = useState<{ startDate?: Date; endDate?: Date }>({});
+  const [selectedRange, setSelectedRange] = useState<string>('All');
+
+  const handleEventPress = (event: Event) => {
+    setSelectedEvent(event);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedEvent(undefined);
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  const handleDateRangeSelect = (startDate: Date, endDate: Date) => {
+    setDateRange({ startDate, endDate });
+  };
+
+  const handleRangeChange = (range: string) => {
+    setSelectedRange(range);
+  };
+
+  const handleClearDateRange = () => {
+    setDateRange({});
+    setSelectedRange('All');
+  };
+
+  const handleResetToAll = () => {
+    setDateRange({});
+    setSelectedRange('All');
+  };
+  
   return (
-    <YStack flex={1} items="center" gap="$8" px="$10" pt="$5" bg="$background">
-      <H2>Tamagui + Expo</H2>
-
-      <ToastControl />
-
-      <XStack
-        items="center"
-        justify="center"
-        flexWrap="wrap"
-        gap="$1.5"
-        position="absolute"
-        b="$8"
-      >
-        <Paragraph fontSize="$5">Add</Paragraph>
-
-        <Paragraph fontSize="$5" px="$2" py="$1" color="$blue10" bg="$blue5">
-          tamagui.config.ts
-        </Paragraph>
-
-        <Paragraph fontSize="$5">to root and follow the</Paragraph>
-
-        <XStack
-          items="center"
-          gap="$1.5"
-          px="$2"
-          py="$1"
-          rounded="$3"
-          bg="$green5"
-          hoverStyle={{ bg: '$green6' }}
-          pressStyle={{ bg: '$green4' }}
-        >
-          <Anchor
-            href="https://tamagui.dev/docs/core/configuration"
-            textDecorationLine="none"
-            color="$green10"
-            fontSize="$5"
-          >
-            Configuration guide
-          </Anchor>
-          <ExternalLink size="$1" color="$green10" />
-        </XStack>
-
-        <Paragraph fontSize="$5" text="center">
-          to configure your themes and tokens.
-        </Paragraph>
-      </XStack>
-    </YStack>
-  )
+    <View style={{ flex: 1, backgroundColor: currentTheme?.background?.primary || '#FEF7ED' }}>
+      <Header />
+      <SearchBar 
+        onSearch={handleSearch} 
+        onDateRangeSelect={handleDateRangeSelect}
+        selectedRange={selectedRange}
+        onRangeChange={handleRangeChange}
+      />
+      <StickyDateBar 
+        dateRange={dateRange} 
+        onClear={handleClearDateRange} 
+        onResetToAll={handleResetToAll} 
+      />
+      <EventList 
+        onEventPress={handleEventPress} 
+        searchQuery={searchQuery}
+        dateRange={dateRange}
+      />
+      
+      {/* Event Details Modal */}
+      <EventDetailsModal 
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        event={selectedEvent}
+      />
+      
+      {/* Bottom Navigation */}
+    </View>
+  );
 }
